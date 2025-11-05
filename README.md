@@ -3,7 +3,7 @@
 Proyecto desarrollado para la asignatura **Optimización y Heurística**  
 Grado en Ciencia e Ingeniería de Datos – ULPGC
 
-Autores: **Raúl Mendoza**, **Adrián Ojdeva** y **Varela**  
+Autores: **Raúl Mendoza**, **Adrián Ojeda** y **Jesus Varela**  
 Curso 2025
 
 ---
