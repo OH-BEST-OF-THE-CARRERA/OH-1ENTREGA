@@ -1,0 +1,43 @@
+# Entorno virtual
+venv/
+.env/
+.env.bak/
+__pycache__/
+
+# Archivos temporales de Python
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+
+# Jupyter y VSCode
+.ipynb_checkpoints/
+.vscode/
+.history/
+
+# Archivos de compilación LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+*.gz
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Datasets descargados automáticamente
+data/*.csv
+data/*.txt
+
+# Resultados o gráficas generadas
+*.png
+*.jpg
+
+# Archivos del sistema
+Thumbs.db
+desktop.ini
