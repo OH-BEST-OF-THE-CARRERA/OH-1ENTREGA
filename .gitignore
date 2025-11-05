@@ -35,8 +35,7 @@ data/*.csv
 data/*.txt
 
 # Resultados o gráficas generadas
-*.png
-*.jpg
+
 
 # Archivos del sistema
 Thumbs.db
