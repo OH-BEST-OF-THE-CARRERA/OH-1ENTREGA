@@ -99,7 +99,7 @@ python test_iris.py
 | IRIS | 4–16–3 | ReLU + softmax | 91.3 % | Aprendizaje estable |
 
 **Figura 1.** Curva de pérdida del entrenamiento sobre IRIS  
-![Curva de pérdida](memoria/fig_loss_iris.png)
+![Curva de pérdida](motor_redes_neuronales/memoria/fig_loss_iris.png)
 
 ---
 
