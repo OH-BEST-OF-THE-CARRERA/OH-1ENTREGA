@@ -186,8 +186,6 @@ def softmax(x):
     >>> softmax(np.array([[1, 2, 3]]))
     array([[0.09003057, 0.24472847, 0.66524096]])
     """
-    # x: (batch, n_classes)
-    # Truco de estabilidad numérica: restar el máximo
     x_shifted = x - np.max(x, axis=1, keepdims=True)
     exp_x = np.exp(x_shifted)
     return exp_x / np.sum(exp_x, axis=1, keepdims=True)

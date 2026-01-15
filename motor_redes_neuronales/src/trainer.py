@@ -163,18 +163,13 @@ class Trainer:
 
         for epoch in range(1, epochs + 1):
             epoch_losses = []
-            # entrenamiento por mini-batches
             for X_batch, y_batch in create_mini_batches(X_train, y_train, batch_size):
-                # forward
                 y_pred = self.network.forward(X_batch)
-                # loss + grad
                 loss, grad_loss = self._loss_and_grad(y_pred, y_batch)
                 epoch_losses.append(loss)
 
-                # backward
                 self.network.backward(grad_loss)
 
-                # update
                 params = self.network.params()
                 grads = self.network.grads()
                 self.optimizer.update(params, grads)
@@ -182,7 +177,6 @@ class Trainer:
             mean_train_loss = np.mean(epoch_losses)
             train_losses.append(mean_train_loss)
 
-            # validación
             if X_val is not None and y_val is not None:
                 y_val_pred = self.network.forward(X_val)
                 val_loss, _ = self._loss_and_grad(y_val_pred, y_val)
@@ -193,7 +187,6 @@ class Trainer:
                 if verbose:
                     print(f"Epoch {epoch}/{epochs} - loss: {mean_train_loss:.4f}")
 
-        # gráficas sencillas
         plt.figure()
         plt.plot(train_losses, label="train_loss")
         if X_val is not None and y_val is not None:
@@ -202,6 +195,6 @@ class Trainer:
         plt.ylabel("Loss")
         plt.legend()
         plt.title("Curva de pérdida")
-        plt.show()
+        plt.close()
 
         return train_losses, val_losses

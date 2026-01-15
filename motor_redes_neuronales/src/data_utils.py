@@ -77,11 +77,9 @@ def train_val_test_split(X, y, train_ratio=0.7, val_ratio=0.15, test_ratio=0.15,
     X = X[indices]
     y = y[indices]
 
-    # Calcular índices de corte
     train_end = int(n * train_ratio)
     val_end = train_end + int(n * val_ratio)
 
-    # Dividir los datos
     X_train, y_train = X[:train_end], y[:train_end]
     X_val, y_val = X[train_end:val_end], y[train_end:val_end]
     X_test, y_test = X[val_end:], y[val_end:]
@@ -133,10 +131,6 @@ def create_mini_batches(X, y, batch_size):
         yield X[start:end], y[start:end]
 
 
-# =============================================================================
-# Funciones para carga de datasets
-# =============================================================================
-
 def load_mnist(data_dir="data/mnist", normalize=True, flatten=True):
     """
     Descarga y carga el dataset MNIST.
@@ -180,7 +174,6 @@ def load_mnist(data_dir="data/mnist", normalize=True, flatten=True):
     import gzip
     import urllib.request
     
-    # URLs oficiales de MNIST
     base_url = "http://yann.lecun.com/exdb/mnist/"
     files = {
         "train_images": "train-images-idx3-ubyte.gz",
@@ -189,7 +182,6 @@ def load_mnist(data_dir="data/mnist", normalize=True, flatten=True):
         "test_labels": "t10k-labels-idx1-ubyte.gz"
     }
     
-    # Crear directorio si no existe
     os.makedirs(data_dir, exist_ok=True)
     
     def download_file(filename):
@@ -205,45 +197,38 @@ def load_mnist(data_dir="data/mnist", normalize=True, flatten=True):
     def load_images(filepath):
         """Carga imágenes desde archivo idx3-ubyte comprimido."""
         with gzip.open(filepath, 'rb') as f:
-            # Leer cabecera: magic number, num imágenes, filas, columnas
             magic = int.from_bytes(f.read(4), 'big')
             num_images = int.from_bytes(f.read(4), 'big')
             rows = int.from_bytes(f.read(4), 'big')
             cols = int.from_bytes(f.read(4), 'big')
-            # Leer datos de píxeles
             data = np.frombuffer(f.read(), dtype=np.uint8)
             return data.reshape(num_images, rows, cols)
     
     def load_labels(filepath):
         """Carga etiquetas desde archivo idx1-ubyte comprimido."""
         with gzip.open(filepath, 'rb') as f:
-            # Leer cabecera: magic number, num etiquetas
             magic = int.from_bytes(f.read(4), 'big')
             num_labels = int.from_bytes(f.read(4), 'big')
-            # Leer etiquetas
             data = np.frombuffer(f.read(), dtype=np.uint8)
             return data
     
-    # Descargar archivos si es necesario
     train_images_path = download_file(files["train_images"])
     train_labels_path = download_file(files["train_labels"])
     test_images_path = download_file(files["test_images"])
     test_labels_path = download_file(files["test_labels"])
     
-    # Cargar datos
     X_train = load_images(train_images_path)
     y_train = load_labels(train_labels_path)
     X_test = load_images(test_images_path)
     y_test = load_labels(test_labels_path)
     
-    # Preprocesamiento
     if normalize:
         X_train = X_train.astype(np.float32) / 255.0
         X_test = X_test.astype(np.float32) / 255.0
     
     if flatten:
-        X_train = X_train.reshape(X_train.shape[0], -1)  # (60000, 784)
-        X_test = X_test.reshape(X_test.shape[0], -1)      # (10000, 784)
+        X_train = X_train.reshape(X_train.shape[0], -1)
+        X_test = X_test.reshape(X_test.shape[0], -1)
     
     print(f"MNIST cargado: {X_train.shape[0]} train, {X_test.shape[0]} test")
     

@@ -89,9 +89,9 @@ class Adam:
         self.beta1 = beta1
         self.beta2 = beta2
         self.eps = eps
-        self.t = 0  # Contador de pasos temporales
-        self.m = {}  # Primer momento (media)
-        self.v = {}  # Segundo momento (varianza)
+        self.t = 0
+        self.m = {}
+        self.v = {}
 
     def update(self, params, grads):
         """
@@ -114,18 +114,14 @@ class Adam:
         """
         self.t += 1
         for i, (p, g) in enumerate(zip(params, grads)):
-            # Inicializar momentos si es la primera vez
             if i not in self.m:
                 self.m[i] = np.zeros_like(g)
                 self.v[i] = np.zeros_like(g)
 
-            # Actualizar estimaciones de momentos
             self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * g
             self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (g ** 2)
 
-            # Corrección de sesgo
             m_hat = self.m[i] / (1 - self.beta1 ** self.t)
             v_hat = self.v[i] / (1 - self.beta2 ** self.t)
 
-            # Actualizar parámetros
             p -= self.lr * m_hat / (np.sqrt(v_hat) + self.eps)

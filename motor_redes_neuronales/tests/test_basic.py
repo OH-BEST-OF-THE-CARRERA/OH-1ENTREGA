@@ -1,6 +1,5 @@
 """
 test_basic.py - Tests Unitarios para el Motor de Redes Neuronales
-==================================================================
 
 Este módulo contiene tests automáticos que verifican el correcto
 funcionamiento de los componentes principales del motor.
@@ -31,7 +30,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 
-# Importar módulos a testear
 from src.activations import sigmoid, sigmoid_derivative, relu, relu_derivative, tanh, tanh_derivative, softmax
 from src.losses import mse, mse_grad, cross_entropy, cross_entropy_grad
 from src.layers import Dense
@@ -45,20 +43,17 @@ def test_sigmoid():
     """Test función sigmoid y su derivada."""
     print("Testing sigmoid...", end=" ")
     
-    # Test valores conocidos
     x = np.array([0.0])
     assert np.isclose(sigmoid(x), 0.5), "sigmoid(0) debe ser 0.5"
     
-    # Test límites
     assert sigmoid(np.array([100.0]))[0] > 0.99, "sigmoid(100) debe ser ~1"
     assert sigmoid(np.array([-100.0]))[0] < 0.01, "sigmoid(-100) debe ser ~0"
     
-    # Test derivada
     x = np.array([0.0])
     deriv = sigmoid_derivative(x)
     assert np.isclose(deriv, 0.25), "sigmoid'(0) debe ser 0.25"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_relu():
@@ -70,12 +65,11 @@ def test_relu():
     expected = np.array([0.0, 0.0, 0.0, 1.0, 2.0])
     assert np.allclose(y, expected), "ReLU no funciona correctamente"
     
-    # Test derivada
     deriv = relu_derivative(x)
     expected_deriv = np.array([0.0, 0.0, 0.0, 1.0, 1.0])
     assert np.allclose(deriv, expected_deriv), "ReLU derivative no funciona"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_tanh():
@@ -85,11 +79,10 @@ def test_tanh():
     x = np.array([0.0])
     assert np.isclose(tanh(x), 0.0), "tanh(0) debe ser 0"
     
-    # Test derivada en 0
     deriv = tanh_derivative(x)
     assert np.isclose(deriv, 1.0), "tanh'(0) debe ser 1"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_softmax():
@@ -99,16 +92,13 @@ def test_softmax():
     x = np.array([[1.0, 2.0, 3.0]])
     y = softmax(x)
     
-    # Softmax debe sumar 1
     assert np.isclose(y.sum(), 1.0), "Softmax debe sumar 1"
     
-    # Todos los valores deben ser positivos
     assert np.all(y > 0), "Softmax debe producir valores positivos"
     
-    # El valor más alto debe corresponder al input más alto
     assert np.argmax(y) == 2, "Softmax debe preservar el orden"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_mse():
@@ -121,12 +111,11 @@ def test_mse():
     loss = mse(y_pred, y_true)
     assert np.isclose(loss, 0.5), f"MSE incorrecto: {loss}"
     
-    # Test gradiente: 2*(y_pred - y_true) / n_elements
     grad = mse_grad(y_pred, y_true)
-    expected_grad = 2 * (y_pred - y_true) / y_true.size  # 2*[[0, -1]]/2 = [[0, -1]]
+    expected_grad = 2 * (y_pred - y_true) / y_true.size  
     assert np.allclose(grad, expected_grad), f"Gradiente MSE incorrecto: {grad} vs {expected_grad}"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_cross_entropy():
@@ -140,7 +129,7 @@ def test_cross_entropy():
     expected_loss = -np.log(0.9)
     assert np.isclose(loss, expected_loss, rtol=1e-5), "Cross-entropy incorrecto"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_dense_forward():
@@ -153,14 +142,12 @@ def test_dense_forward():
     x = np.array([[1.0, 2.0, 3.0]])
     y = layer.forward(x)
     
-    # Verificar forma de salida
     assert y.shape == (1, 2), f"Forma incorrecta: {y.shape}"
     
-    # Verificar que se puede calcular manualmente
     expected = x @ layer.W + layer.b
     assert np.allclose(y, expected), "Forward pass incorrecto"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_dense_backward():
@@ -173,16 +160,14 @@ def test_dense_backward():
     x = np.array([[1.0, 2.0, 3.0]])
     y = layer.forward(x)
     
-    # Simular gradiente de la pérdida
     grad_output = np.array([[1.0, 1.0]])
     grad_input = layer.backward(grad_output)
     
-    # Verificar formas
     assert grad_input.shape == x.shape, "Forma de gradiente incorrecta"
     assert layer.dW.shape == layer.W.shape, "Forma de dW incorrecta"
     assert layer.db.shape == layer.b.shape, "Forma de db incorrecta"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_network_forward():
@@ -197,13 +182,11 @@ def test_network_forward():
     x = np.array([[1.0, 2.0], [3.0, 4.0]])
     y = net.forward(x)
     
-    # Verificar forma
     assert y.shape == (2, 2), f"Forma incorrecta: {y.shape}"
     
-    # Verificar que softmax produce distribución válida
     assert np.allclose(y.sum(axis=1), 1.0), "Softmax no suma 1"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_network_backward():
@@ -218,20 +201,16 @@ def test_network_backward():
     x = np.array([[1.0, 2.0]])
     y = net.forward(x)
     
-    # Simular gradiente de cross-entropy
     y_true = np.array([[1.0, 0.0]])
     grad = cross_entropy_grad(y, y_true)
     
     net.backward(grad)
     
-    # Verificar que los gradientes se calcularon
     grads = net.grads()
     assert len(grads) == 4, "Deben haber 4 gradientes (dW1, db1, dW2, db2)"
     
     for g in grads:
         assert not np.all(g == 0), "Los gradientes no deben ser todos cero"
-    
-    print("✓")
 
 
 def test_adam_optimizer():
@@ -241,20 +220,17 @@ def test_adam_optimizer():
     np.random.seed(42)
     optimizer = Adam(lr=0.1)
     
-    # Crear un parámetro simple
     param = np.array([1.0, 2.0, 3.0])
     grad = np.array([0.1, 0.2, 0.3])
     
     params = [param.copy()]
     grads = [grad]
     
-    # Primer paso
     optimizer.update(params, grads)
     
-    # El parámetro debe haber cambiado
     assert not np.allclose(params[0], param), "Adam no actualizó el parámetro"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_train_val_test_split():
@@ -269,16 +245,14 @@ def test_train_val_test_split():
         X, y, train_ratio=0.7, val_ratio=0.15, test_ratio=0.15, seed=42
     )
     
-    # Verificar tamaños
     assert len(X_train) == 70, f"Train debe tener 70 muestras, tiene {len(X_train)}"
     assert len(X_val) == 15, f"Val debe tener 15 muestras, tiene {len(X_val)}"
     assert len(X_test) == 15, f"Test debe tener 15 muestras, tiene {len(X_test)}"
     
-    # Verificar que no hay solapamiento
     total = len(X_train) + len(X_val) + len(X_test)
     assert total == 100, "La suma debe ser 100"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_mini_batches():
@@ -290,14 +264,12 @@ def test_mini_batches():
     
     batches = list(create_mini_batches(X, y, batch_size=32))
     
-    # Deben haber 4 batches (32 + 32 + 32 + 4)
     assert len(batches) == 4, f"Deben haber 4 batches, hay {len(batches)}"
     
-    # Verificar tamaños
     assert batches[0][0].shape[0] == 32, "Primer batch debe tener 32"
     assert batches[-1][0].shape[0] == 4, "Último batch debe tener 4"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_to_one_hot():
@@ -317,7 +289,7 @@ def test_to_one_hot():
     
     assert np.allclose(one_hot, expected), "One-hot incorrecto"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def test_xor_training():
@@ -326,25 +298,20 @@ def test_xor_training():
     
     np.random.seed(42)
     
-    # Datos XOR
     X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=np.float32)
     y = np.array([[1, 0], [0, 1], [0, 1], [1, 0]], dtype=np.float32)
     
-    # Crear red
     net = NeuralNetwork()
     net.add(Dense(2, 8, activation="tanh"))
     net.add(Dense(8, 2, activation="softmax"))
     
-    # Entrenar
     optimizer = Adam(lr=0.1)
     trainer = Trainer(net, optimizer, loss_name="cross_entropy")
     train_losses, _ = trainer.train(X, y, epochs=500, batch_size=4, verbose=False)
     
-    # Verificar convergencia
     assert train_losses[-1] < train_losses[0], "La pérdida debe disminuir"
     assert train_losses[-1] < 0.1, f"La pérdida final debe ser baja, es {train_losses[-1]:.4f}"
     
-    # Verificar predicciones
     pred = net.forward(X)
     pred_labels = np.argmax(pred, axis=1)
     true_labels = np.argmax(y, axis=1)
@@ -352,14 +319,12 @@ def test_xor_training():
     
     assert accuracy == 1.0, f"XOR debe clasificarse al 100%, accuracy={accuracy}"
     
-    print("✓")
+    print("Completado.\n")
 
 
 def run_all_tests():
     """Ejecuta todos los tests."""
-    print("\n" + "="*60)
-    print("EJECUTANDO TESTS DEL MOTOR DE REDES NEURONALES")
-    print("="*60 + "\n")
+    print("Ejecutando test del motor de redes neuronales.")
     
     tests = [
         test_sigmoid,
@@ -393,14 +358,12 @@ def run_all_tests():
             print(f"✗ - Error inesperado: {e}")
             failed += 1
     
-    print("\n" + "="*60)
-    print(f"RESULTADOS: {passed} passed, {failed} failed")
-    print("="*60)
+    print(f"Resultados: {passed} passed, {failed} failed")
     
     if failed == 0:
-        print("\n✅ Todos los tests pasaron correctamente!")
+        print("\nTodos los tests pasaron correctamente")
     else:
-        print(f"\n❌ {failed} tests fallaron.")
+        print(f"\n{failed} tests fallaron.")
     
     return failed == 0
 

@@ -172,25 +172,18 @@ class Dense(Layer):
         self.n_out = n_out
         self.activation_name = activation
 
-        # Inicialización de pesos según el método especificado
         if weight_init == "he":
-            # He initialization: óptimo para ReLU
             self.W = np.random.randn(n_in, n_out) * np.sqrt(2.0 / n_in)
         elif weight_init == "xavier":
-            # Xavier/Glorot initialization: óptimo para sigmoid/tanh
             self.W = np.random.randn(n_in, n_out) * np.sqrt(1.0 / n_in)
         else:
-            # Inicialización aleatoria pequeña por defecto
             self.W = np.random.randn(n_in, n_out) * 0.01
 
-        # Sesgos inicializados a cero
         self.b = np.zeros((1, n_out))
 
-        # Caches para almacenar valores durante forward (necesarios para backward)
-        self._x = None  # Entrada a la capa
-        self._z = None  # Pre-activación (antes de aplicar la función de activación)
+        self._x = None
+        self._z = None
 
-        # Gradientes (se calculan en backward)
         self.dW = np.zeros_like(self.W)
         self.db = np.zeros_like(self.b)
 
@@ -247,7 +240,6 @@ class Dense(Layer):
             return act.relu_derivative(z)
         if self.activation_name == "tanh":
             return act.tanh_derivative(z)
-        # softmax: la derivada combinada con cross-entropy se maneja externamente
         if self.activation_name == "softmax":
             return np.ones_like(z)
         raise ValueError(f"Derivada de activación {self.activation_name} no soportada")
@@ -275,9 +267,9 @@ class Dense(Layer):
         Los valores de entrada (x) y pre-activación (z) se almacenan
         en caché para usarse durante el backward pass.
         """
-        self._x = x  # Guardar entrada para backward
-        z = x @ self.W + self.b  # Transformación lineal: (batch, n_out)
-        self._z = z  # Guardar pre-activación para backward
+        self._x = x
+        z = x @ self.W + self.b
+        self._z = z
         return self._activation(z)
 
     def backward(self, grad_output):
@@ -307,23 +299,15 @@ class Dense(Layer):
         combinada (y_pred - y_true)/batch, por lo que no multiplicamos
         por la derivada de softmax.
         """
-        # Gradiente de la activación
         if self.activation_name in (None, "softmax"):
-            # Para softmax+CE, el gradiente combinado ya viene calculado
             grad_act = grad_output
         else:
-            # Aplicar regla de la cadena: dL/dz = dL/da * da/dz
             grad_act = grad_output * self._activation_derivative(self._z)
 
-        # Gradiente respecto a los pesos: dL/dW = x^T @ dL/dz
-        # Forma: (n_in, batch) @ (batch, n_out) = (n_in, n_out)
         self.dW = self._x.T @ grad_act
         
-        # Gradiente respecto al sesgo: dL/db = sum(dL/dz, axis=0)
         self.db = np.sum(grad_act, axis=0, keepdims=True)
 
-        # Gradiente respecto a la entrada: dL/dx = dL/dz @ W^T
-        # Forma: (batch, n_out) @ (n_out, n_in) = (batch, n_in)
         grad_input = grad_act @ self.W.T
         return grad_input
 
