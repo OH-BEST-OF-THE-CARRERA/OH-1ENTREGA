@@ -173,8 +173,13 @@ def load_mnist(data_dir="data/mnist", normalize=True, flatten=True):
     import os
     import gzip
     import urllib.request
+    import urllib.error
     
-    base_url = "http://yann.lecun.com/exdb/mnist/"
+    # Intentar URLs en orden de preferencia: sitio oficial y espejo público (CVDF)
+    base_urls = [
+        "https://yann.lecun.com/exdb/mnist/",
+        "https://storage.googleapis.com/cvdf-datasets/mnist/"
+    ]
     files = {
         "train_images": "train-images-idx3-ubyte.gz",
         "train_labels": "train-labels-idx1-ubyte.gz",
@@ -185,14 +190,30 @@ def load_mnist(data_dir="data/mnist", normalize=True, flatten=True):
     os.makedirs(data_dir, exist_ok=True)
     
     def download_file(filename):
-        """Descarga un archivo si no existe."""
+        """Descarga un archivo si no existe, con fallbacks de URL."""
         filepath = os.path.join(data_dir, filename)
-        if not os.path.exists(filepath):
-            print(f"Descargando {filename}...")
-            url = base_url + filename
-            urllib.request.urlretrieve(url, filepath)
-            print(f"  Guardado en {filepath}")
-        return filepath
+        if os.path.exists(filepath):
+            return filepath
+
+        last_error = None
+        for base_url in base_urls:
+            try:
+                url = base_url + filename
+                print(f"Descargando {filename} desde {base_url}...")
+                urllib.request.urlretrieve(url, filepath)
+                print(f"  Guardado en {filepath}")
+                return filepath
+            except (urllib.error.HTTPError, urllib.error.URLError) as e:
+                last_error = e
+                print(f"  Falló descarga desde {base_url}: {getattr(e, 'code', '')} {getattr(e, 'reason', e)}")
+                continue
+
+        raise RuntimeError(
+            f"No se pudo descargar {filename}. Último error: {last_error}. "
+            "Pruebe conexión a Internet o descargue manualmente los archivos de MNIST "
+            "(train-images-idx3-ubyte.gz, train-labels-idx1-ubyte.gz, "
+            "t10k-images-idx3-ubyte.gz, t10k-labels-idx1-ubyte.gz) y colóquelos en '" + data_dir + "'."
+        )
     
     def load_images(filepath):
         """Carga imágenes desde archivo idx3-ubyte comprimido."""
