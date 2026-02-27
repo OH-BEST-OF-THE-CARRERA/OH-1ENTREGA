@@ -137,5 +137,5 @@ Uso educativo permitido citando la fuente.
 ---
 
 **Autores:**  
-Raúl Mendoza — Adrián Ojdeva — Varela  
+Raúl Mendoza — Adrián Ojeda — Jesus Varela  
 *Optimización y Heurística – ULPGC, 2025*
